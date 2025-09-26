@@ -3,22 +3,13 @@ using MvcExampleP421.Models;
 
 namespace MvcExampleP421.Controllers;
 
-public class CategoryController(DataStorage dataStorage) : Controller
+public class CategoryController(StoreContext context) : Controller
 {
     // GET /Category/Index
     public IActionResult Index()
     {
-        var categories = dataStorage.Categories;
-
-        var message = "Моє повідомлення";
-
-        var date = DateTime.Now.AddDays(30);
-
-        // Запам'ятовуємо дані у ViewData
+        var categories = context.Categories.ToList();
         ViewData["Categories"] = categories;
-        ViewData["Message"] = message;
-        ViewData["Date"] = date;
-
         return View();
     }
 
@@ -35,9 +26,9 @@ public class CategoryController(DataStorage dataStorage) : Controller
     {
         if (ModelState.IsValid)
         {
-            category.Id = dataStorage.Categories.Count > 0 ? dataStorage.Categories.Max(c => c.Id) + 1 : 1;
-            dataStorage.Categories.Add(category);
             // Логіка збереження категорії (наприклад, у базу даних)
+            context.Categories.Add(category);
+            context.SaveChanges();
             // Після збереження перенаправляємо на сторінку зі списком категорій
             return RedirectToAction("Index");
         }
@@ -49,7 +40,7 @@ public class CategoryController(DataStorage dataStorage) : Controller
     [HttpGet]
     public IActionResult Edit(int id)
     {
-        var category = dataStorage.Categories.FirstOrDefault(c => c.Id == id);
+        var category = context.Categories.FirstOrDefault(c => c.Id == id);
         if (category == null)
         {
             return NotFound();
@@ -63,7 +54,7 @@ public class CategoryController(DataStorage dataStorage) : Controller
     {
         if (ModelState.IsValid)
         {
-            var category = dataStorage.Categories.FirstOrDefault(c => c.Id == id);
+            var category = context.Categories.FirstOrDefault(c => c.Id == id);
             if (category == null)
             {
                 return NotFound();
@@ -71,6 +62,7 @@ public class CategoryController(DataStorage dataStorage) : Controller
             category.Name = updatedCategory.Name;
             
             // Логіка оновлення категорії (наприклад, у базу даних)
+            context.SaveChanges();
             // Після оновлення перенаправляємо на сторінку зі списком категорій
             return RedirectToAction("Index");
         }
@@ -82,13 +74,14 @@ public class CategoryController(DataStorage dataStorage) : Controller
     // POST /Category/Delete/3
     public IActionResult Delete(int id)
     {
-        var category = dataStorage.Categories.FirstOrDefault(c => c.Id == id);
+        var category = context.Categories.FirstOrDefault(c => c.Id == id);
         if (category == null)
         {
             return NotFound();
         }
-        dataStorage.Categories.Remove(category);
         // Логіка видалення категорії (наприклад, з бази даних)
+        context.Categories.Remove(category);
+        context.SaveChanges();
         // Після видалення перенаправляємо на сторінку зі списком категорій
         return RedirectToAction("Index");
     }

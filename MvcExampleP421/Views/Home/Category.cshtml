@@ -1,9 +1,11 @@
-﻿@model List<Product>
+﻿@model Category
 @{
     ViewData["Title"] = "Awesome store";
     var categories = ViewData["Categories"] as List<Category>;
 
-    var categoryLinks = categories.Select(c =>
+    var categoryLinks = categories
+    .Where(c => c.Id != Model.Id)
+    .Select(c =>
     {
         return (object)new
         {
@@ -11,22 +13,27 @@
             Url = Url.Action("Category", new {Controller = "Home", id = c.Id})
         };
     }).ToList();
+
+    categoryLinks.Insert(0, (object)new
+    {
+        Name = "Всі",
+        Url = Url.Action("Index", new {Controller = "Home"})
+    });
 }
 
 <h2 class="mb-4">Категорії</h2>
-
 @await Html.PartialAsync("_CategoryLinks", categoryLinks)
 
-<h2 class="mb-4 mt-4">Усі продукти</h2>
+<h2 class="mb-4 mt-4">@Model.Name</h2>
 <div class="row mb-4">
-    @foreach (var item in Model)
+    @foreach (var item in Model.Products)
     {
         <div class="col-md-3">
             @await Html.PartialAsync("_ProductCard", item)
         </div>
+
     }
 </div>
-
 @await Html.PartialAsync("_CategoryLinks", categoryLinks)
 
 @section Scripts {

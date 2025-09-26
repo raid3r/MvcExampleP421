@@ -8,15 +8,9 @@
 
     // Отримуємо дані з ViewData
     var categories = ViewData["Categories"] as List<Category>;
-    var date = ViewData["Date"] as DateTime?;
-    var message = ViewData["Message"] as string;
-
 }
 
 <h1>@ViewData["Title"]</h1>
-
-<div>Повідомлення: @message</div>
-<div>Дата: @date?.ToString("dd.MM.yyyy")</div>
 
 <div>
     <a class="btn btn-primary" asp-controller="Category" asp-action="Create">Створити нову категорію</a>

@@ -1,0 +1,49 @@
+﻿@model Order
+@{
+    ViewData["Title"] = "Замовлення № " + Model.Id;
+}
+
+
+<h2>Замовлення № @Model.Id</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th></th>
+            <th>Назва</th>
+            <th>Кількість</th>
+            <th>Ціна</th>
+            <th>Загальна ціна</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Items)
+        {
+            <tr>
+                <td>
+                    <div class="d-flex justify-content-center">
+                    @if (item.Product?.ImageFile != null)
+                    {
+                        <img 
+                            style="max-height: 100px;"
+                            src="@item.Product?.ImageFile.Src" class="img-thumbnail" />
+                    }
+                    </div>
+                </td>
+                <td>@item.Product?.Name</td>
+                <td>@item.Quantity</td>
+                <td>@item.Price</td>
+                <td>@(item.Quantity* item.Price)</td>
+            </tr>
+        }
+        <tr>
+            <td colspan="4" class="text-end">
+                <b>Всього:</b>
+            </td>
+            <td>
+                <b>@Model.Items.Sum(x => x.Quantity * x.Price)</b>
+                
+            </td>
+        </tr>
+    </tbody>
+</table>

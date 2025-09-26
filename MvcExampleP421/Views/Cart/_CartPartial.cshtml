@@ -1,0 +1,61 @@
+﻿@model List<MvcExampleP421.Models.ViewModels.CartItemRenderViewModel>
+
+<table class="table">
+    
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Name</td>
+                <td>@item.Quantity</td>
+                <td>@item.Product?.Price</td>
+                <td>
+                    <div class="d-flex gap-1">
+                        <button
+                           data-itemid="@item.Id"
+                           data-action="add-quantity"
+                           class="btn btn-outline-info">
+                            +
+                        </button>
+
+                        <button data-itemid="@item.Id"
+                                data-action="sub-quantity"
+                                class="btn btn-outline-info">
+                            -
+                        </button>
+                    </div>
+
+                </td>
+                <td>
+                    @item.TotalPrice
+                </td>
+                <td>
+                    <button
+                       data-itemid="@item.Id"
+                       data-action="remove-from-cart"
+                       class="btn btn-danger btn-sm">
+                        Remove
+                    </button>
+                </td>
+            </tr>
+        }
+        <tr>
+            <td colspan="4" class="text-end">
+                Total:
+            </td>
+            <td colspan="2">
+                @Model.Sum(x => x.TotalPrice)
+            </td>
+        </tr>
+    </tbody>
+
+    
+
+</table>
+
+<div>
+    <button class="btn btn-success"
+            data-action="make-order">
+        Order
+    </button>
+</div>

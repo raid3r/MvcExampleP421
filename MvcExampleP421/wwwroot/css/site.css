@@ -20,3 +20,22 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+
+/**
+    CSS selectors for common HTML elements
+
+    div
+    .class
+    #id
+    [data-id]
+    .
+
+    <div></div>
+    <div data-id="hello-world 1"> </div>
+    <div></div>
+    <div data-id="hello-world 2"> </div>
+
+*/
+
+

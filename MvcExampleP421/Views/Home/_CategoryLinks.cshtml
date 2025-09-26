@@ -1,0 +1,21 @@
+﻿@model List<dynamic>
+
+@{
+    var links = Model.Select(x => new { Name = x.Name, Url = x.Url }).ToList();
+}
+    
+
+<div class="row">
+    @foreach (var link in links)
+    {
+        <div class="col-md-2">
+            <a href="@link.Url" style="text-decoration: none" class="text-center">
+                <div class="card">
+                    <div class="card-body">
+                        @link.Name
+                    </div>
+                </div>
+            </a>
+        </div>
+    }
+</div>

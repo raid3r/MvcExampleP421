@@ -1,10 +1,18 @@
+using Microsoft.EntityFrameworkCore;
 using MvcExampleP421.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-builder.Services.AddSingleton<DataStorage>();
+builder.Services.AddScoped<ImageFileStorageService>();
+
+
+builder.Services.AddDbContext<StoreContext>(options =>
+{
+    options.UseSqlite("Data Source=store.db");
+});
+
 
 var app = builder.Build();
 
@@ -41,3 +49,22 @@ app.MapControllerRoute(
     );
 
 app.Run();
+
+
+/*
+ * Зробити сторінку статистики з інформацією:
+ * 
+ * Кількість товарів
+ * Кількість категорій
+ * Список категорій з кількістю товарів в кожній, кількістю продажів в кожній категорії, загальною сумою продажів в кожній категорії
+ * Загальна сума продажів 
+ */
+
+
+/*
+ * Додати для продуктів зображення.
+ * У формі створення/редагування продукту додати можливість завантаження зображення.
+ * У списку продуктів та на сторінці редагування показувати зображення.
+ * 
+ * 
+ */ 

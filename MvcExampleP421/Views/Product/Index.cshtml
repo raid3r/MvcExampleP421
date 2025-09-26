@@ -1,0 +1,76 @@
+﻿@model List<Product>
+@{
+    ViewData["Title"] = "Продукти";
+    var categories = ViewData["Categories"] as List<Category>;
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<div>
+    <a class="btn btn-primary" asp-controller="Product" asp-action="Create">Створити новий продукт</a>
+</div>
+
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Name</th>
+            <th>Price</th>
+            <th>Category</th>
+            <th></th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Id</td>
+                <td>@item.Name</td>
+                <td>@item.Price</td>
+
+                <td>@categories.FirstOrDefault(x => x.Id == item.CategoryId)?.Name</td>
+                <td>
+                    @if (item.ImageFile != null)
+                    {
+                        <img src="@item.ImageFile.Src" class="img-thumbnail" width="200" />
+                    }
+                </td>
+                <td>
+                    <div class="d-flex gap-3">
+
+                        <a class="btn btn-sm btn-success"
+                           asp-controller="Sale"
+                           asp-action="Create"
+                           asp-route-id="@item.Id">
+                            Продаж
+                        </a>
+
+                        <a class="btn btn-sm btn-outline-info"
+                           asp-controller="Sale"
+                           asp-action="List"
+                           asp-route-id="@item.Id">
+                            Продажі
+                        </a>
+
+                        <a class="btn btn-sm btn-info"
+                           asp-controller="Product"
+                           asp-action="Edit"
+                           asp-route-id="@item.Id">
+                            Редагувати
+                        </a>
+
+                        <form method="post"
+                              asp-controller="Product"
+                              asp-action="Delete"
+                              asp-route-id="@item.Id">
+                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Ви впевнені?');">
+                                Видалити
+                            </button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
