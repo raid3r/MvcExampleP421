@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿@using System.Security.Claims
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -8,6 +9,7 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/MvcExampleP421.styles.css" asp-append-version="true" />
     @await RenderSectionAsync("Styles", required: false)
+
 </head>
 <body>
     <header>
@@ -26,17 +28,62 @@
                        @*  <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li> *@
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Dashboard" asp-action="Index">Dashboard</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Category" asp-action="Index">Categories</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Product" asp-action="Index">Продукти</a>
-                        </li>
+
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Dashboard" asp-action="Index">Dashboard</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Category" asp-action="Index">Categories</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Product" asp-action="Index">Продукти</a>
+                            </li>
+                        }
+
                         @await RenderSectionAsync("MenuLinks", required: false)
                     </ul>
+                    <ul class="navbar-nav flex-grow-1">
+
+                        @if (!User.Identity.IsAuthenticated)
+                        {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Вхід
+                                </a>
+                                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                    <li><a 
+                                        asp-action="Login" asp-controller="Account"
+                                        class="dropdown-item">Увійти</a></li>
+                                    <li><a asp-action="Register" asp-controller="Account"
+                                        class="dropdown-item">Реєстрація</a></li>
+                                </ul>
+                            </li>
+                        } 
+
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    @User.Claims.First(x => x.Type == ClaimTypes.Email).Value
+                                </a>
+                                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                    <li>
+                                        <a asp-action="Profile" asp-controller="Account"
+                                           class="dropdown-item">Пофіль</a>
+                                    </li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a asp-action="Logout" asp-controller="Account"
+                                        class="dropdown-item">Вийти</a></li>
+                                </ul>
+                            </li>
+                        }
+                        
+
+
+                        
+                        </ul>
                 </div>
             </div>
         </nav>

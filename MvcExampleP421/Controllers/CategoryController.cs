@@ -1,8 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using MvcExampleP421.Models;
 
 namespace MvcExampleP421.Controllers;
 
+[Authorize]
 public class CategoryController(StoreContext context) : Controller
 {
     // GET /Category/Index

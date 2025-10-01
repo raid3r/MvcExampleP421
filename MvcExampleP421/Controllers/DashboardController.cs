@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MvcExampleP421.Models;
 using MvcExampleP421.Models.ViewModels;
 
 namespace MvcExampleP421.Controllers;
 
+[Authorize]
 public class DashboardController(StoreContext context) : Controller
 {
     public IActionResult Index()

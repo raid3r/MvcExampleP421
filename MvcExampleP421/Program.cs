@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using MvcExampleP421.Models;
 
@@ -7,10 +8,36 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<ImageFileStorageService>();
 
-
 builder.Services.AddDbContext<StoreContext>(options =>
 {
     options.UseSqlite("Data Source=store.db");
+});
+
+builder.Services.AddIdentity<User, IdentityRole<int>>(options =>
+{
+    options.SignIn.RequireConfirmedPhoneNumber = false;
+    options.SignIn.RequireConfirmedEmail = false;
+    options.SignIn.RequireConfirmedAccount = false;
+
+    options.Password.RequiredLength = 3; // мінімальна довжина 3 символи
+    options.Password.RequiredUniqueChars = 0; // кількість унікальних символів
+
+    options.Password.RequireDigit = false; // не обов'язково мати цифру
+    options.Password.RequireLowercase = false; // не обов'язково мати малу літеру
+    options.Password.RequireNonAlphanumeric = false; // не обов'язково мати спеціальний символ
+    options.Password.RequireUppercase = false; // не обов'язково мати велику літеру
+    options.Password.RequireLowercase = false; // не обов'язково мати малу літеру
+
+})
+    .AddRoles<IdentityRole<int>>() 
+    .AddEntityFrameworkStores<StoreContext>()
+    .AddDefaultTokenProviders();
+
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.LoginPath = new PathString("/Account/Register");
+    options.LogoutPath =  new PathString("/Account/Logout");
+    options.AccessDeniedPath = new PathString("/Account/AccessDenied");
 });
 
 
@@ -27,9 +54,14 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
+
 app.UseRouting();
 
+// Автентифікація
+app.UseAuthentication();
+// Авторизація
 app.UseAuthorization();
+
 
 // GET /Home/Index
 // GET /Home/Privacy

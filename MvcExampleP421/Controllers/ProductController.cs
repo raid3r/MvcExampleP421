@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MvcExampleP421.Models;
 using MvcExampleP421.Models.Forms;
 
 namespace MvcExampleP421.Controllers;
 
+[Authorize]
 public class ProductController(
     StoreContext context,
     ImageFileStorageService storageService

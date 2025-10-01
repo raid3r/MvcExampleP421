@@ -1,8 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.General;
 
 namespace MvcExampleP421.Models;
 
-public class StoreContext: DbContext
+public class StoreContext : IdentityDbContext<User, IdentityRole<int>, int>
 {
     public StoreContext()
     {

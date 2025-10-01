@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MvcExampleP421.Models;
 
 namespace MvcExampleP421.Controllers;
 
+[Authorize]
 public class SaleController(StoreContext context) : Controller
 {
     public IActionResult List(int id)
