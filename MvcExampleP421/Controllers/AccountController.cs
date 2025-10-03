@@ -106,7 +106,7 @@ public class AccountController(UserManager<User> userManager) : Controller
 
         identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()));
         identity.AddClaim(new Claim(ClaimTypes.Email, user.Email));
-        
+
         var principal = new ClaimsPrincipal(identity);
 
         await HttpContext.SignInAsync(IdentityConstants.ApplicationScheme, principal);

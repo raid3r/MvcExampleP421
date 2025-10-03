@@ -1,4 +1,10 @@
-﻿@using System.Security.Claims
+﻿@{
+    var currentUserEmail = User.Identity.IsAuthenticated ?
+            User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value :
+            null;
+}
+
+@using System.Security.Claims
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,6 +15,9 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/MvcExampleP421.styles.css" asp-append-version="true" />
     @await RenderSectionAsync("Styles", required: false)
+
+    
+
 
 </head>
 <body>
@@ -66,11 +75,11 @@
                         {
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    @User.Claims.First(x => x.Type == ClaimTypes.Email).Value
+                                    @currentUserEmail
                                 </a>
                                 <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                                     <li>
-                                        <a asp-action="Profile" asp-controller="Account"
+                                        <a asp-action="Index" asp-controller="Profile"
                                            class="dropdown-item">Пофіль</a>
                                     </li>
                                     <li><hr class="dropdown-divider"></li>
