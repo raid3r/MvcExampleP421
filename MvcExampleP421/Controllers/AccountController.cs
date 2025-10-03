@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using MvcExampleP421.Models;
 using MvcExampleP421.Models.Forms;
 using System.Security.Claims;
@@ -38,15 +39,10 @@ public class AccountController(UserManager<User> userManager) : Controller
             return View(form);
         }
 
-        var identity = new ClaimsIdentity(IdentityConstants.ApplicationScheme);
-
-        identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()));
-        identity.AddClaim(new Claim(ClaimTypes.Email, user.Email));
-
-        var principal = new ClaimsPrincipal(identity);
-
-        await HttpContext.SignInAsync(IdentityConstants.ApplicationScheme, principal);
-
+        await SignInAsync(await userManager
+            .Users
+            .Include(x => x.ImageFile)  
+            .FirstAsync(x => x.Id == user.Id));
 
         if (!string.IsNullOrEmpty(returnUrl))
         {
@@ -102,16 +98,8 @@ public class AccountController(UserManager<User> userManager) : Controller
             return View(form);
         }
 
-        var identity = new ClaimsIdentity(IdentityConstants.ApplicationScheme);
-
-        identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()));
-        identity.AddClaim(new Claim(ClaimTypes.Email, user.Email));
-
-        var principal = new ClaimsPrincipal(identity);
-
-        await HttpContext.SignInAsync(IdentityConstants.ApplicationScheme, principal);
-
-
+        await SignInAsync(user);
+        
         if (!string.IsNullOrEmpty(returnUrl))
         {
             return Redirect(returnUrl);
@@ -120,6 +108,15 @@ public class AccountController(UserManager<User> userManager) : Controller
         return RedirectToAction("Index", "Home");
     }
 
+    private async Task SignInAsync(User user)
+    {
+        var identity = new ClaimsIdentity(IdentityConstants.ApplicationScheme);
+        identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()));
+        identity.AddClaim(new Claim(ClaimTypes.Email, user.Email));
+        identity.AddClaim(new Claim("AvatarSrc", user.ImageFile?.Src ?? string.Empty));
+        var principal = new ClaimsPrincipal(identity);
+        await HttpContext.SignInAsync(IdentityConstants.ApplicationScheme, principal);
+    }
 
     [Authorize]
     public async Task<IActionResult> Logout()

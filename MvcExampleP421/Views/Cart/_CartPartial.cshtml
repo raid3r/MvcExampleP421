@@ -54,8 +54,21 @@
 </table>
 
 <div>
-    <button class="btn btn-success"
-            data-action="make-order">
-        Order
-    </button>
+    @if (User.Identity.IsAuthenticated)
+    {
+        <button class="btn btn-success"
+                data-action="make-order">
+            Замовити
+        </button>
+    }
+    else
+    {
+        <a class="btn btn-primary"
+           asp-controller="Account"
+           asp-action="Login"
+           asp-route-returnUrl="/Cart/Index">
+            Увійти до облікового запису щоб замовити
+        </a>
+    }
+    
 </div>

@@ -1,4 +1,6 @@
-﻿namespace MvcExampleP421.Models;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace MvcExampleP421.Models;
 
 public class Order
 {
@@ -6,4 +8,8 @@ public class Order
     public DateTime CreatedAt { get; set; } = DateTime.Now;
 
     public virtual ICollection<OrderItem> Items { get; set; } = [];
+
+    public int? UserId { get; set; }
+    [ForeignKey("UserId")]
+    public virtual User? User { get; set; }
 }

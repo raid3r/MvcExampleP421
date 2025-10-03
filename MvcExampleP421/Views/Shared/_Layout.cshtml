@@ -2,6 +2,10 @@
     var currentUserEmail = User.Identity.IsAuthenticated ?
             User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value :
             null;
+
+    var currentUserAvatarSrc = User.Identity.IsAuthenticated ?
+            User.Claims.FirstOrDefault(c => c.Type == "AvatarSrc")?.Value :
+            string.Empty;
 }
 
 @using System.Security.Claims
@@ -75,6 +79,13 @@
                         {
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+
+                                    @if (!string.IsNullOrEmpty(currentUserAvatarSrc))
+                                    {
+                                        <img src="@currentUserAvatarSrc" alt="Avatar" 
+                                            style="width:30px; height:30px; border-radius:50%; object-fit:cover; margin-right:8px;" />
+                                    }
+
                                     @currentUserEmail
                                 </a>
                                 <ul class="dropdown-menu" aria-labelledby="navbarDropdown">

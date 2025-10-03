@@ -1,0 +1,34 @@
+﻿@model User
+@{
+    Layout = null;
+}
+
+<table class="table">
+    <tbody>
+        @if (Model.ImageFile != null)
+        {
+            <tr>
+                <td colspan="2">
+                    <img src="@Model.ImageFile.Src" class="img-thumbnail rounded" />
+                </td>
+            </tr>
+        }
+
+        <tr>
+            <th>Id</th>
+            <td>@Model.Id</td>
+        </tr>
+        <tr>
+            <th>UserName</th>
+            <td>@Model.UserName</td>
+        </tr>
+        <tr>
+            <th>Email</th>
+            <td>@Model.Email</td>
+        </tr>
+        <tr>
+            <th>PhoneNumber</th>
+            <td>@Model.PhoneNumber</td>
+        </tr>
+    </tbody>
+</table>

@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using MvcExampleP421.Models;
 using MvcExampleP421.Models.Forms;
 using System.Security.Claims;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace MvcExampleP421.Controllers;
 
@@ -17,7 +18,17 @@ public class ProfileController(
 {
     public async Task<IActionResult> Index()
     {
-        return View(await GetCurrentUser());
+        var user = await GetCurrentUser();
+        var orders = await context.Orders
+            .Where(o => o.UserId == user.Id)
+            .Include(o => o.Items)
+            .ThenInclude(oi => oi.Product)
+            .ThenInclude(p => p.ImageFile)
+            .ToListAsync();
+
+        ViewData["Orders"] = orders;
+
+        return View(user);
     }
 
     private async Task<User> GetCurrentUser()
@@ -28,6 +39,46 @@ public class ProfileController(
             .FirstAsync(x => x.Id == currentUserId);
         return user;
     }
+
+
+    [HttpGet]
+    public async Task<IActionResult> ChangePassword()
+    {
+        var user = await GetCurrentUser();
+        ViewData["User"] = user;
+        return View(new ChangePasswordForm());
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> ChangePassword([FromForm] ChangePasswordForm form)
+    {
+        var user = await GetCurrentUser();
+        ViewData["User"] = user;
+        if (!ModelState.IsValid)
+        {
+            return View(form);
+        }
+        if (!await userManager.CheckPasswordAsync(user, form.OldPassword))
+        {
+            ModelState.AddModelError(nameof(form.OldPassword), "Неправильний пароль");
+            return View(form);
+        }
+        if (form.NewPassword != form.ConfirmNewPassword)
+        {
+            ModelState.AddModelError(nameof(form.ConfirmNewPassword), "Паролі не співпадають");
+            return View(form);
+        }
+        var result = await userManager.ChangePasswordAsync(user, form.OldPassword, form.NewPassword);
+        if (!result.Succeeded)
+        {
+            ModelState.AddModelError(nameof(form.NewPassword), "Використайте інший пароль");
+            return View(form);
+        }
+
+        return RedirectToAction(nameof(Index));
+    }
+
+
 
     [HttpGet]
     public async Task<IActionResult> Edit()

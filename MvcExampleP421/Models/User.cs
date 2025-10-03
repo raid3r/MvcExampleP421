@@ -8,4 +8,7 @@ public class User: IdentityUser<int>
     public int? ImageFileId { get; set; }
     [ForeignKey("ImageFileId")]
     public virtual ImageFile? ImageFile { get; set; }
+
+
+    public virtual ICollection<Order> Orders { get; set; } = [];
 }

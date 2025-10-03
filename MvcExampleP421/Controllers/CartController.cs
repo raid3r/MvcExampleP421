@@ -1,11 +1,14 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MvcExampleP421.Models;
 using MvcExampleP421.Models.ViewModels;
+using System.Security.Claims;
 
 namespace MvcExampleP421.Controllers;
 
-public class CartController(StoreContext context) : Controller
+public class CartController(StoreContext context, UserManager<User> userManager) : Controller
 {
     public IActionResult Index()
     {
@@ -25,9 +28,23 @@ public class CartController(StoreContext context) : Controller
         return PartialView("_CartPartial", cartItems);
     }
 
-    [HttpPost]
-    public IActionResult MakeOrder([FromBody] List<CartItemViewModel> cartItems)
+
+    private async Task<User> GetCurrentUser()
     {
+        var currentUserId = int.Parse(User.Claims.First(x => x.Type == ClaimTypes.NameIdentifier).Value);
+        var user = await userManager.Users
+            .Include(x => x.ImageFile)
+            .FirstAsync(x => x.Id == currentUserId);
+        return user;
+    }
+
+    [Authorize]
+    [HttpPost]
+    public async Task<IActionResult> MakeOrder([FromBody] List<CartItemViewModel> cartItems)
+    {
+        // Отримати поточного користувача
+        var user = await GetCurrentUser();
+
         // Створити список позицій замовлення на основі елементів корзини
         var orderItems = new List<OrderItem>();
 
@@ -52,10 +69,11 @@ public class CartController(StoreContext context) : Controller
         var order = new Order
         {
             CreatedAt = DateTime.Now,
-            Items = orderItems
+            Items = orderItems,
+            User = user
         };
 
-        
+
         foreach (var item in orderItems)
         {
             // Створити запис про продаж
