@@ -1,49 +1,100 @@
-﻿@model Order
+﻿@using MvcExampleP421.Models.LiqPay
+@model LiqPayCheckoutFormModel
 @{
-    ViewData["Title"] = "Замовлення № " + Model.Id;
+    var order = ViewData["Order"] as Order;
+    ViewData["Title"] = "Замовлення № " + order.Id;
 }
 
 
-<h2>Замовлення № @Model.Id</h2>
+<h2>Замовлення № @order.Id</h2>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th></th>
-            <th>Назва</th>
-            <th>Кількість</th>
-            <th>Ціна</th>
-            <th>Загальна ціна</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model.Items)
-        {
-            <tr>
-                <td>
-                    <div class="d-flex justify-content-center">
-                    @if (item.Product?.ImageFile != null)
-                    {
-                        <img 
-                            style="max-height: 100px;"
-                            src="@item.Product?.ImageFile.Src" class="img-thumbnail" />
-                    }
-                    </div>
-                </td>
-                <td>@item.Product?.Name</td>
-                <td>@item.Quantity</td>
-                <td>@item.Price</td>
-                <td>@(item.Quantity* item.Price)</td>
-            </tr>
+<div class="row">
+    <div class="col-md-6">
+
+        <div id="liqpay_checkout"></div>
+
+        @{
+            // <form method="POST" accept-charset="utf-8" action="https://www.liqpay.ua/api/3/checkout">
+            //     <input type="hidden" name="data" value="@Model.Data" />
+            //     <input type="hidden" name="signature" value="@Model.Signature" />
+            //     <button style="border: none !important; display:inline-block !important;text-align: center !important;padding: 7px 20px !important;
+            //                             color: #fff !important; font-size:16px !important; font-weight: 600 !important; font-family:OpenSans, sans-serif; cursor: pointer !important; border-radius: 2px !important;
+            //                             background: rgb(122,183,43) !important;" onmouseover="this.style.opacity='0.5';" onmouseout="this.style.opacity='1';">
+            //         <img src="https://static.liqpay.ua/buttons/logo-small.png" name="btn_text"
+            //              style="margin-right: 7px !important; vertical-align: middle !important;" />
+            //         <span style="vertical-align:middle !important">Pay</span>
+            //     </button>
+            // </form>
         }
-        <tr>
-            <td colspan="4" class="text-end">
-                <b>Всього:</b>
-            </td>
-            <td>
-                <b>@Model.Items.Sum(x => x.Quantity * x.Price)</b>
-                
-            </td>
-        </tr>
-    </tbody>
-</table>
+
+
+    </div>
+    <div class="col-md-6">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Назва</th>
+                    <th>Кількість</th>
+                    <th>Ціна</th>
+                    <th>Загальна ціна</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in order.Items)
+                {
+                    <tr>
+                        <td>
+                            <div class="d-flex justify-content-center">
+                                @if (item.Product?.ImageFile != null)
+                                {
+                                    <img style="max-height: 100px;"
+                                         src="@item.Product?.ImageFile.Src" class="img-thumbnail" />
+                                }
+                            </div>
+                        </td>
+                        <td>@item.Product?.Name</td>
+                        <td>@item.Quantity</td>
+                        <td>@item.Price</td>
+                        <td>@(item.Quantity* item.Price)</td>
+                    </tr>
+                }
+                <tr>
+                    <td colspan="4" class="text-end">
+                        <b>Всього:</b>
+                    </td>
+                    <td>
+                        <b>@order.Items.Sum(x => x.Quantity * x.Price)</b>
+
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script>
+        window.LiqPayCheckoutCallback = function() {
+        LiqPayCheckout.init(
+            {
+                data: '@Html.Raw(Model.Data)',
+                signature: '@Html.Raw(Model.Signature)',
+                embedTo: "#liqpay_checkout",
+                language: "uk",
+                mode: "embed" // embed || popup
+               }
+        ).on("liqpay.callback", function(data){
+            console.log(data.status);
+            console.log(data);
+        }).on("liqpay.ready", function(data){
+        // ready
+        }).on("liqpay.close", function(data){
+        // close
+        });
+        };
+    </script>
+
+    <script src="//static.liqpay.ua/libjs/checkout.js" async></script>
+}

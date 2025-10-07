@@ -6,7 +6,7 @@ using MvcExampleP421.Models;
 
 namespace MvcExampleP421.Controllers;
 
-[Authorize]
+[Authorize(Roles = "Admin")]
 public class SaleController(StoreContext context) : Controller
 {
     public IActionResult List(int id)

@@ -6,7 +6,10 @@ using MvcExampleP421.Models.Forms;
 
 namespace MvcExampleP421.Controllers;
 
-[Authorize]
+// test1 - []
+// admin - [Admin]
+
+[Authorize(Roles = "Admin")]
 public class ProductController(
     StoreContext context,
     ImageFileStorageService storageService

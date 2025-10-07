@@ -4,7 +4,7 @@ using MvcExampleP421.Models;
 
 namespace MvcExampleP421.Controllers;
 
-[Authorize]
+[Authorize(Roles = "Admin")]
 public class CategoryController(StoreContext context) : Controller
 {
     // GET /Category/Index

@@ -29,14 +29,14 @@ builder.Services.AddIdentity<User, IdentityRole<int>>(options =>
     options.Password.RequireLowercase = false; // не обов'язково мати малу літеру
 
 })
-    .AddRoles<IdentityRole<int>>() 
+    .AddRoles<IdentityRole<int>>()
     .AddEntityFrameworkStores<StoreContext>()
     .AddDefaultTokenProviders();
 
 builder.Services.ConfigureApplicationCookie(options =>
 {
     options.LoginPath = new PathString("/Account/Register");
-    options.LogoutPath =  new PathString("/Account/Logout");
+    options.LogoutPath = new PathString("/Account/Logout");
     options.AccessDeniedPath = new PathString("/Account/AccessDenied");
 });
 
@@ -80,6 +80,55 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}"
     );
 
+
+// Перевірка на існування ролів користувачів та адміністратора по за замовчуванням
+
+using (var scope = app.Services.CreateScope())
+{
+    // Отримання сервісів
+    var services = scope.ServiceProvider;
+
+    // Міграція бази даних автоматично при запуску
+    var context = services.GetRequiredService<StoreContext>();
+    context.Database.Migrate();
+
+
+    
+    var roleManager = services.GetRequiredService<RoleManager<IdentityRole<int>>>();
+    var userManager = services.GetRequiredService<UserManager<User>>();
+
+    string[] roles = ["Admin", "User"];
+
+    // Перевірка на існування ролей та створення їх, якщо їх немає
+    foreach (string role in roles)
+    {
+        var roleExist = await roleManager.RoleExistsAsync(role);
+        if (!roleExist)
+        {
+            await roleManager.CreateAsync(new IdentityRole<int>(role));
+        }
+    }
+
+    // Створення адміністратора по замовчуванню
+    string adminEmail = "admin@test.com";
+    string adminPassword = "admin";
+
+    User adminUser = await userManager.FindByEmailAsync(adminEmail);
+    if (adminUser == null)
+    {
+        adminUser = new User
+        {
+            UserName = adminEmail,
+            Email = adminEmail,
+        };
+        var result = await userManager.CreateAsync(adminUser, adminPassword);
+        if (result.Succeeded)
+        {
+            await userManager.AddToRoleAsync(adminUser, "Admin");
+        }
+    }
+}
+
 app.Run();
 
 
@@ -98,5 +147,14 @@ app.Run();
  * У формі створення/редагування продукту додати можливість завантаження зображення.
  * У списку продуктів та на сторінці редагування показувати зображення.
  * 
+ * 
+ */
+
+
+/*
+ * Рольова модель.
+ * - Гість
+ * - Зареєстрований користувач (покупець)
+ * - Адміністратор
  * 
  */ 

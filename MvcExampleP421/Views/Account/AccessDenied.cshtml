@@ -1,0 +1,36 @@
+﻿@{
+    ViewData["Title"] = "Доступ заборонено";
+}
+
+<div class="row">
+    <div class="col-md-12">
+
+        <div class="d-flex justify-content-center align-items-center" style="min-height: 80vh">
+
+            <div style="min-width: 350px;">
+                <div class="card" style="-webkit-box-shadow: 4px 4px 8px 0px rgba(34, 60, 80, 0.2);
+-moz-box-shadow: 4px 4px 8px 0px rgba(34, 60, 80, 0.2);
+box-shadow: 4px 4px 8px 0px rgba(34, 60, 80, 0.2);">
+                    <div class="card-body">
+                        <h5 class="card-title">@ViewData["Title"]</h5>
+
+                        <div class="text-center mt-4">
+                            <h1 class="text-danger">Доступ заборонено</h1>
+                            <p class="text-muted">
+                                Ви не маєте права доступу до цього ресурсу
+                            </p>
+                            <hr />
+                            <a asp-controller="Home" asp-action="Index" class="btn btn-primary">Повернутися</a>
+                        </div>
+
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+

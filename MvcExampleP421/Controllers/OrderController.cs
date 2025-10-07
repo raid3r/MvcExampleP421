@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MvcExampleP421.Models;
+using MvcExampleP421.Models.LiqPay;
 using MvcExampleP421.Models.ViewModels;
 
 namespace MvcExampleP421.Controllers;
@@ -15,6 +16,10 @@ public class OrderController(StoreContext context) : Controller
             .ThenInclude(p => p.ImageFile)
             .FirstAsync(o => o.Id == id);
 
-        return View(order);
+        ViewData["Order"] = order;
+
+        var form = LiqPayHelper.GetLiqPayModel(order.Id.ToString(), order.Items.Sum(x => x.Price * x.Quantity));
+
+        return View(form);
     }
 }

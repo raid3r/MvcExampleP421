@@ -91,6 +91,9 @@ public class AccountController(UserManager<User> userManager) : Controller
 
         var result = await userManager.CreateAsync(user, form.Password);
 
+        // Надання ролі "User" новому користувачу
+        //var addToRoleResult = await userManager.AddToRoleAsync(user, "User");
+
         if (!result.Succeeded)
         {
             // result.Errors містить інформацію про помилки, які виникли під час створення користувача
@@ -114,6 +117,13 @@ public class AccountController(UserManager<User> userManager) : Controller
         identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()));
         identity.AddClaim(new Claim(ClaimTypes.Email, user.Email));
         identity.AddClaim(new Claim("AvatarSrc", user.ImageFile?.Src ?? string.Empty));
+
+        var userRoles = await userManager.GetRolesAsync(user);
+        foreach (var role in userRoles)
+        {
+            identity.AddClaim(new Claim(ClaimTypes.Role, role));
+        }
+
         var principal = new ClaimsPrincipal(identity);
         await HttpContext.SignInAsync(IdentityConstants.ApplicationScheme, principal);
     }
@@ -123,5 +133,10 @@ public class AccountController(UserManager<User> userManager) : Controller
     {
         await HttpContext.SignOutAsync(IdentityConstants.ApplicationScheme);
         return RedirectToAction("Index", "Home");
+    }
+
+    public IActionResult AccessDenied(string? returnUrl)
+    {
+        return View();
     }
 }
